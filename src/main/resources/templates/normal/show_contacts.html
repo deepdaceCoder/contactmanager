@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	th:replace="normal/base::layout(~{::section})">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+	<section>
+		
+		<div th:unless="${contacts}" class="container text-center">
+			<h3 class="mr-3 ml-3 mt-3 p-3 mb-2 bg-warning text-white">No Contacts to show!!</h3>
+		</div>
+		
+		<div class="card mr-3 ml-3" th:if="${contacts}">
+
+			<div class="alert" role="alert" th:if="${session.message}"
+				th:classappend="${session.message.type}">
+				<p class="text-center" th:text="${session.message.content}"></p>
+				<th:block th:text="${#session.removeAttribute('message')}"></th:block>
+			</div>
+
+			<div class="card-body">
+				<div class="container text-center">
+					<img th:src="@{/images/contacts.png}" alt="" style="width: 80px" />
+					<h3 class="text-center">Your Contacts!!</h3>
+				</div>
+				
+				<!-- Code for search results -->
+				<div class="search-container my-4">
+					<input id="search-input" type="text" class="form-control" 
+						placeholder="Search your contacts" 
+						onkeyup="search()"/>
+					<div class="search-result">
+					</div>
+				</div>
+				
+				<div class="table-responsive">
+				<!-- Shows all contacts -->
+				<table th:if="${contacts}" class="table table-hover mt-4">
+					<thead class="thead-dark">
+						<tr>
+							<th scope="col">#ID</th>
+							<th scope="col">Name</th>
+							<th scope="col">Nickname</th>
+							<th scope="col">Email</th>
+							<th scope="col">Phone</th>
+							<th scope="col">Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="c : ${contacts}">
+							<th scope="row" th:text="${'Contact_'+counter.incrementAndGetCount()}" 
+								class='clickable-row clickableTr' 
+								th:onclick="'javascript:rowClicked(\'' + 'detail/' + ${c.cId} + '\');'">
+							</th>
+							<td class='clickable-row clickableTr' 
+								th:onclick="'javascript:rowClicked(\'' + 'detail/' + ${c.cId} + '\');'">
+								<img th:if="${c.image == defaultPicture}"
+									th:src="@{'/images/'+${c.image}}" 
+									alt="profile photo" 
+									class="myProfilePicture" />
+								<img th:unless="${c.image == defaultPicture}"
+									th:src="@{'/images/'+${user.id}+'/'+${c.image}}" 
+									alt="profile photo" 
+									class="myProfilePicture" />
+								<span th:text="${c.name}"></span>
+							</td>
+							
+							<td th:text="${c.secondName}" class='clickable-row clickableTr' 
+								th:onclick="'javascript:rowClicked(\'' + 'detail/' + ${c.cId} + '\');'">
+							</td>
+							
+							<td th:text="${c.email}" class='clickable-row clickableTr' 
+								th:onclick="'javascript:rowClicked(\'' + 'detail/' + ${c.cId} + '\');'">
+							</td>
+							
+							<td th:text="${c.phone}" class='clickable-row clickableTr' 
+								th:onclick="'javascript:rowClicked(\'' + 'detail/' + ${c.cId} + '\');'">
+							</td>
+							
+							<td>
+								<a th:href="@{'/user/add-contact?cId='+${c.cId}}" 
+									class="btn btn-primary btn-sm">Update</a>
+								<button th:onclick="'javascript:deleteContact(\''+${c.cId}+'\');'" 
+									class="btn btn-danger btn-sm">Delete</button>
+							</td>
+							
+						</tr>
+					</tbody>
+				</table>
+				</div>
+
+				<!-- Pagination component -->
+				<nav aria-label="Page navigation example" th:if="${contacts}">
+				
+					<ul class="pagination">
+					
+						<li class="page-item"><a class="page-link" 
+							th:if="${currentPage != 0}"
+							th:href="@{'/user/show-contacts/'+${currentPage-1}}"
+							aria-label="Previous"> <span aria-hidden="true">PREVIOUS</span>
+						</a></li>
+						
+						<li th:classappend="${currentPage==i-1 ? 'active' : ''}" 
+							th:each="i : ${#numbers.sequence(1,totalPages)}" 
+							class="page-item">
+							<a class="page-link" th:href="@{'/user/show-contacts/'+${i-1}}">
+								<span th:text="${i}"></span>
+							</a>
+						</li>
+						
+						<li class="page-item"><a class="page-link" 
+							th:if="${currentPage+1 != totalPages}"
+							th:href="@{'/user/show-contacts/'+${currentPage+1}}" 
+							aria-label="Next"> <span aria-hidden="true">NEXT</span>
+						</a></li>
+						
+					</ul>
+					
+				</nav>
+			</div>
+		</div>
+		
+		<script>
+			$(document).ready(() => {
+				$('.item').removeClass('active');
+				$('#show-contacts-link').addClass('active');
+			});
+		</script>
+		
+		<script>
+			function rowClicked(value) {
+				location.href = value;
+			}
+			function deleteContact(cId) {
+				swal({
+					  title: "Are you sure?",
+					  text: "Do you want to delete this contact?",
+					  icon: "warning",
+					  buttons: true,
+					  dangerMode: true,
+					})
+					.then((willDelete) => {
+					  if (willDelete) {
+					    window.location="/user/delete/"+cId;
+					  } else {
+					    swal("Your contact is safe!!");
+					  }
+					});
+			}
+		</script>
+		<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+	</section>
+</body>
+</html>

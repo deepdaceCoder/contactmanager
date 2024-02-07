@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	th:replace="normal/base::layout(~{::section})">
+<head>
+<meta charset="ISO-8859-1">
+<title>User Settings</title>
+</head>
+<body>
+	<section>
+		
+		<div class="container">
+			<div class="row">
+				<div class="col-md-10 offset-md-1">
+					<div class="card">
+						<div class="card-body">
+
+							<div class="alert" role="alert" th:if="${session.message}"
+								th:classappend="${session.message.type}">
+								<p class="text-center" th:text="${session.message.content}"></p>
+								<th:block th:text="${#session.removeAttribute('message')}"></th:block>
+							</div>
+
+							<div class="container text-center" th:if="${cp}">
+								<h2 class="text-center mt-3 mb-3 font-bold">
+								Logging out in <span id="countdown"></span>
+								</h2>
+							</div>
+
+							<h3 class="text-center mt-3 mb-3 font-bold">
+								Change Password
+							</h3>
+							<form th:action="@{/user/change-password}" method="POST"
+								class="mt-2">
+								<div class="form-group mb-3">
+									<input name="oldPassword" type="password" class="form-control"
+										placeholder="Enter old password" />
+								</div>
+								<div class="form-group mb-3">
+									<input name="newPassword" type="password" class="form-control"
+										placeholder="Enter new password" />
+								</div>
+								<div class="container text-center">
+									<button type="submit" class="btn btn-success">Change</button>
+									<button type="reset" class="btn btn-warning">Reset</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<script>
+			$(document).ready(() => {
+				$('.item').removeClass('active');
+				$('#settings-link').addClass('active');
+				
+				let counter = document.getElementById('countdown');
+				let count = 0;
+				if(counter !== null) {
+					setInterval(() => {
+						count++;
+						
+						if(count>5)
+							location.replace('/logout');
+						
+						if(count<6)
+							counter.innerText = count;
+						
+					}, 1000);
+				}
+				
+			});
+		</script>
+		
+	</section>
+</body>
+</html>

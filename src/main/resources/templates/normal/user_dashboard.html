@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	th:replace="normal/base::layout(~{::section})">
+<head>
+<meta charset="ISO-8859-1">
+<title>User Dashboard</title>
+</head>
+<body>
+	<section>
+		<div class="container">
+
+			<div class="card mr-3 ml-3">
+				<div class="card-body">
+
+					<div class="alert" role="alert" th:if="${session.message}"
+						th:classappend="${session.message.type}">
+						<p class="text-center" th:text="${session.message.content}"></p>
+						<th:block th:text="${#session.removeAttribute('message')}"></th:block>
+					</div>
+
+					<div class="container text-center">
+						<img th:if="${user.imageUrl == defaultPicture}"
+							th:src="@{'/images/'+${user.imageUrl}}" alt="Picture"
+							class="myProfilePicture" style="height: 150px; width: 150px;" />
+						<img th:unless="${user.imageUrl == defaultPicture}"
+							th:src="@{'/images/'+${user.id}+'/'+${user.imageUrl}}"
+							alt="Picture" class="myProfilePicture"
+							style="height: 150px; width: 150px;" />
+					</div>
+
+					<h1 class="text-center mt-3 font-bold font-weight-light">
+						Welcome, <span th:text="${user.name}"></span>!!
+					</h1>
+
+					<h3
+						class="text-center mt-3 text-secondary font-secondary font-weight-light">
+						Start adding your contacts.................</h3>
+
+					<div class="container text-center mt-3">
+						<a th:href="@{/user/add-contact}">
+							<button class="btn bg-primary btn-lg text-white">Add New
+								Contact</button>
+						</a>
+					</div>
+
+
+				</div>
+			</div>
+
+		</div>
+		
+		<script>
+			$(document).ready(() => {
+				$('.item').removeClass('active');
+				$('#home-link').addClass('active');
+			});
+		</script>
+		
+	</section>
+</body>
+</html>
